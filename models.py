@@ -103,7 +103,60 @@ class Cat(Pet):
         return "Мяу!"
 
 
+class Person:
+    def __init__(self, person_id, full_name, phone=None):
+        self.__id = person_id
+        self.full_name = full_name
+        self._phone = phone
 
+    def get_phone(self):
+        return self._phone
+
+    def set_phone(self, new_phone):
+        self._phone = new_phone
+
+    def get_id(self):
+        return self.__id
+
+    def show_profile(self):
+        return f"Пользователь: {self.full_name}"
+
+class Owner(Person):
+    def __init__(self, owner_id, full_name, phone):
+        super().__init__(self, owner_id, full_name, phone)
+
+    def show_profile(self):
+        return f"[Клиент клиники] {self.full_name}, Контакты: {self.phone}"
+
+    @classmethod
+    def from_db(cls, row):
+        if not row:
+            return None
+        return cls(owner_id=row[0], full_name=row[1], phone=row[2])
+
+
+class Doctor(Person):
+    def __init__(self, doctor_id, full_name, specialization, phone="Не указан"):
+        super().__init__(doctor_id, full_name, phone)
+        self.specialization = specialization
+
+    def show_profile(self):
+        return f"[Ветеринар] {self.full_name}, Специализация: {self.specialization}"
+
+    @classmethod
+    def from_db(cls, row):
+        if not row:
+            return None
+        return cls(doctor_id=row[0], full_name=row[1], specialization=row[2])
+
+
+class Administrator(Person):
+    def __init__(self, admin_id, full_name, phone, shift_time):
+        super().__init__(admin_id, full_name, phone)
+        self.shift_time = shift_time
+
+    def show_profile(self):
+        return f"[Администратор] {self.full_name}, График смены: {self.shift_time}"
 
 
 

@@ -11,7 +11,7 @@ class VaccinationMixin:
     def get_vaccination_status(self):
         return "Вакцинирован" if self.is_vaccinated else "Не вакцинирован"
 
-class MedicalHistoryMixin:
+class MedicalHiistoryMixin:
     def __init__(self):
         self._history = []
 
@@ -22,7 +22,7 @@ class MedicalHistoryMixin:
         return self._history if self._history else ["История болезней чиста."]
 
 class Animal(ABC):
-    def __init__(self, animal_id,name, species, age):
+    def __init__(self, animal_id, name, species, age):
         self.__id = animal_id
         self.name = name
         self.species = species
@@ -39,11 +39,11 @@ class Animal(ABC):
     def show_info(self):
         pass
 
-class Pet(Animal, VaccinationMixin, MedicalHistoryMixin):
+class Pet(Animal, VaccinationMixin, MedicalHiistoryMixin):
     def __init__(self, animal_id, name, species, age, owner_id=None):
         Animal.__init__(self, animal_id, name, species, age)
         VaccinationMixin.__init__(self)
-        MedicalHistoryMixin.__init__(self)
+        MedicalHiistoryMixin.__init__(self)
         self.owner_id = owner_id
 
     def show_info(self):
@@ -72,7 +72,7 @@ class Pet(Animal, VaccinationMixin, MedicalHistoryMixin):
 
     @staticmethod
     def generate_card_number():
-        return f"MED-{random.randint(1000,9999)}"
+        return f"MED-{random.randint(1000, 9999)}"
 
     @classmethod
     def from_db(cls, row):
@@ -157,9 +157,3 @@ class Administrator(Person):
 
     def show_profile(self):
         return f"[Администратор] {self.full_name}, График смены: {self.shift_time}"
-
-
-
-
-
-

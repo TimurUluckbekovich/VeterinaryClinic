@@ -75,4 +75,36 @@ def delete_doctor(doctor_id: int):
         conn.close()
 
 
+def create_appointments(pet_id: int, doctor_id: int, visit_date: str,  diagnosis: str):
+    conn = connect_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO appointments (pet_id, doctor_id, visit_date, diagnosis) VALUES (?, ?, ?, ?",
+            (pet_id, doctor_id, visit_date, diagnosis)
+        )
+        conn.commit()
+        return cursor.lastrowid
+    except sqlite3.Error as e:
+        print(f"[Ошибка CRUD] Не удалось записать питомца на приём: {e}")
+        return None
+    finally:
+        conn.close()
 
+def get_pet_medical_history(pet_id: int):
+    conn = connect_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT a.id, a.visit_date, d.full_name, d.diagnosis
+            FROM appointments a
+            JOIN doctors d ON a.doctor_id = d.id
+            WHERE a.pet_id = ?
+            ORDER BY a.visit_date DESC
+        ''', (pet_id,))
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"[Ошибка CRUD] Не удалось загрузить историю приёмов: {e}")
+        return []
+    finally:
+        conn.close()

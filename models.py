@@ -123,10 +123,10 @@ class Person:
 
 class Owner(Person):
     def __init__(self, owner_id, full_name, phone):
-        super().__init__(self, owner_id, full_name, phone)
+        super().__init__(owner_id, full_name, phone)
 
     def show_profile(self):
-        return f"[Клиент клиники] {self.full_name}, Контакты: {self.phone}"
+        return f"[Клиент клиники] {self.full_name}, Контакты: {self._phone}"
 
     @classmethod
     def from_db(cls, row):

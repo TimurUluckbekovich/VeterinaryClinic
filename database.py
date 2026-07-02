@@ -53,7 +53,7 @@ def create_tables():
         ''')
 
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS  clinic_statistics AS
+            CREATE VIEW IF NOT EXISTS  clinic_statistics AS
             SELECT
                 p.name AS pet_name,
                 o.full_name AS owner_name,

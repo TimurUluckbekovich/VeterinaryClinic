@@ -159,7 +159,7 @@ def update_pet(pet_id: int, name: str, species: str, age: int, owner_id: int = N
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE pets SET name = ?, species = ?, age = ?, owner_id = ? WHERE id = >",
+            "UPDATE pets SET name = ?, species = ?, age = ?, owner_id = ? WHERE id = ?",
             (name, species, age, owner_id, pet_id)
         )
         conn.commit()
@@ -184,3 +184,68 @@ def delete_pet(pet_id: int):
     finally:
         conn.close()
 
+def get_clinic_aggregates():
+    conn = connect_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(id), AVG(age), MIN(age), MAX(age) FROM pets")
+        row = cursor.fetchone()
+        if row and row[0] > 0:
+            return {
+                "total_pets": row[0],
+                "avg_age": round(row[1], 1),
+                "min_age": row[2],
+                "max_age": row[3]
+            }
+        return {"total_pets": 0, "avg_age": 0, "min_age": 0, "max_age": 0}
+    except sqlite3.Error as e:
+        print(f"[Ошибка статистики] Не удалось посчитать агрегаты: {e}")
+        return None
+    finally:
+        conn.close()
+
+
+def get_species_stats():
+    conn = connect_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT species, COUNT(id) FROM pets GROUP BY species")
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"[Ошибка статистики] Не удалось сгруппировать по видам: {e}")
+        return []
+    finally:
+        conn.close()
+
+
+def get_top_doctors():
+    conn = connect_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT d.full_name, COUNT(a.id) AS app_count
+            FROM doctors d
+            LEFT JOIN appointments a ON d.id = a.doctor_id
+            GROUP BY d.id
+            HAVING app_count > (
+                SELECT AVG(cnt)
+                FROM (SELECT COUNT(*) AS cnt FROM appointments GROUP BY doctor_id)
+            )
+        ''')
+    except sqlite3.Error as e:
+        print(f"[Ошибка статистики] Не удалось выполнить сложный запрос по врачам: {e}")
+        return []
+    finally:
+        conn.close()
+
+def get_clinic_statistics_view():
+    conn = connect_db()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT pet_name, owner_name, doctor_name, visit_count, last_diagnosis FROM clinic_statistics")
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"[Ошибка статистики] Не удалось прочитать VIEW: {e}")
+        return []
+    finally:
+        conn.close()

@@ -232,6 +232,7 @@ def get_top_doctors():
                 FROM (SELECT COUNT(*) AS cnt FROM appointments GROUP BY doctor_id)
             )
         ''')
+        return cursor.fetchall()
     except sqlite3.Error as e:
         print(f"[Ошибка статистики] Не удалось выполнить сложный запрос по врачам: {e}")
         return []

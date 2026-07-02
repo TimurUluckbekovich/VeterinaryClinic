@@ -11,7 +11,7 @@ class VaccinationMixin:
     def get_vaccination_status(self):
         return "Вакцинирован" if self.is_vaccinated else "Не вакцинирован"
 
-class MedicalHiistoryMixin:
+class MedicalHistoryMixin:
     def __init__(self):
         self._history = []
 
@@ -39,11 +39,11 @@ class Animal(ABC):
     def show_info(self):
         pass
 
-class Pet(Animal, VaccinationMixin, MedicalHiistoryMixin):
+class Pet(Animal, VaccinationMixin, MedicalHistoryMixin):
     def __init__(self, animal_id, name, species, age, owner_id=None):
         Animal.__init__(self, animal_id, name, species, age)
         VaccinationMixin.__init__(self)
-        MedicalHiistoryMixin.__init__(self)
+        MedicalHistoryMixin.__init__(self)
         self.owner_id = owner_id
 
     def show_info(self):
